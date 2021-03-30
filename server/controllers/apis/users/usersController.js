@@ -64,7 +64,13 @@ function getProfileInfo(req, res, next) {
     relationModal(GET_INTEREST_IN_RELATION, email)
   ])
     .then((result) => {
-      res.status(200).send(result);
+      const profileInfo = result[0][0];
+      const profileDetails = result[1][0];
+      const profileRelationship = result[2];
+
+      res
+        .status(200)
+        .send({ profileInfo, profileDetails, profileRelationship });
     })
     .catch((error) => {
       next(error);
