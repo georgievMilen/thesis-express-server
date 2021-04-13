@@ -21,8 +21,7 @@ function userModal(query, data) {
     try {
       pool.query(query, data, (error, results) => {
         if (error) throw new Error({ messsage: error.message });
-        if (results.affectedRows === 0)
-          throw new Error({ message: "Something went wrong!" });
+
         resolve(results);
       });
     } catch (error) {

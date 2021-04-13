@@ -1,10 +1,9 @@
 "use strict";
 
 const {
-  GET_USER,
+  GET_USER_DATA,
   INSERT_USER,
   UDPATE_USER,
-  GET_DETAILS,
   INSERT_DETAILS,
   UPDATE_USER_DETAILS,
   GET_INTEREST_IN_RELATION,
@@ -59,18 +58,15 @@ function getProfileInfo(req, res, next) {
   const email = url[1];
 
   Promise.all([
-    userModal(GET_USER, email),
-    userModal(GET_DETAILS, email),
+    userModal(GET_USER_DATA, email),
     relationModal(GET_INTEREST_IN_RELATION, email)
   ])
     .then((result) => {
       const profileInfo = result[0][0];
-      const profileDetails = result[1][0];
-      const profileRelationship = result[2];
 
-      res
-        .status(200)
-        .send({ profileInfo, profileDetails, profileRelationship });
+      const profileRelationship = result[1];
+      console.log(result);
+      res.status(200).send({ profileInfo, profileRelationship });
     })
     .catch((error) => {
       next(error);
@@ -95,7 +91,8 @@ function updateProfile(req, res, next) {
     height,
     eyeColor,
     hairColor,
-    relArrForDB
+    relArrForDB,
+    interestGenderForDB
   } = req.body;
 
   console.log(req.body);
