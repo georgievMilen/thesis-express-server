@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { userModal } = require("../models/users/usersModel");
+const { modal } = require("../models/users/usersModel");
 const { updateRefreshToken } = require("../models/users/usersModel");
 const { refreshTokenGenerate } = require("../utils/jwtUtil");
 const { UPDATE_REFRESH_TOKEN, GET_USER_AUTH } = require("../constants/");
@@ -7,9 +7,9 @@ const { UPDATE_REFRESH_TOKEN, GET_USER_AUTH } = require("../constants/");
 const verifyRefreshToken = (req, res, next) => {
   const { email } = req.body;
   const refreshToken = refreshTokenGenerate(email);
-  userModal(UPDATE_REFRESH_TOKEN, [refreshToken, email])
+  modal(UPDATE_REFRESH_TOKEN, [refreshToken, email])
     .then((results) => {
-      userModal(GET_USER_AUTH, email)
+      modal(GET_USER_AUTH, email)
         .then((results) => {
           if (results[0].refresh_token) {
             const decoded = jwt.verify(

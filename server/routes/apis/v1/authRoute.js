@@ -8,11 +8,11 @@ const {
 } = require("../../../controllers/apis/users/usersController");
 const {
   loginVerify,
-  emailNotTaken
+  credetialsNotTaken
 } = require("../../../middleware/userAuthMddlware");
 const { verifyRefreshToken } = require("../../../middleware/jwtMddlware");
 
-router.post("/register", emailNotTaken, createUserAction);
+router.post("/register", credetialsNotTaken, createUserAction);
 router.post("/login", loginVerify, verifyRefreshToken, loginUserAction);
 router.post("/logout", logoutUserAction);
 

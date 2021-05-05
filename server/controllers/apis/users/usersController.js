@@ -4,20 +4,16 @@ const {
   GET_USER_DATA,
   INSERT_USER,
   UDPATE_USER,
-  INSERT_DETAILS,
   UPDATE_USER_DETAILS,
   GET_INTEREST_IN_RELATION,
   UPDATE_RELATIONSHIPS
-} = require("../../../constants/constants");
+} = require("../../../constants");
 const {
   refreshTokenGenerate,
   accessTokenGenerate
 } = require("../../../utils/jwtUtil");
 const bcrypt = require("bcrypt");
-const {
-  userModal,
-  relationModal
-} = require("../../../models/users/usersModel");
+const { modal, relationModal } = require("../../../models/users/usersModel");
 
 function logoutUserAction(req, res) {
   req.session.loggedin = false;
@@ -25,26 +21,18 @@ function logoutUserAction(req, res) {
 }
 
 async function createUserAction(req, res, next) {
-  const { password, firstName, lastName, email } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const refreshToken = refreshTokenGenerate(email);
+  const { password, first_name, last_name, email, username } = req.body;
 
-  const details = {
-    user_account_id: email
-  };
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const refresh_token = refreshTokenGenerate(email);
 
   const userData = {
-    first_name: firstName,
-    last_name: lastName,
-    email: email,
+    ...req.body,
     password: hashedPassword,
-    refresh_token: refreshToken
+    refresh_token
   };
 
-  Promise.all([
-    userModal(INSERT_DETAILS, details),
-    userModal(INSERT_USER, userData)
-  ])
+  modal(INSERT_USER, userData)
     .then((result) => {
       res.status(200).json("Successfull registration");
     })
@@ -58,7 +46,7 @@ function getProfileInfo(req, res, next) {
   const email = url[1];
 
   Promise.all([
-    userModal(GET_USER_DATA, email),
+    modal(GET_USER_DATA, email),
     relationModal(GET_INTEREST_IN_RELATION, email)
   ])
     .then((result) => {
@@ -110,8 +98,8 @@ function updateProfile(req, res, next) {
   });
 
   Promise.all([
-    userModal(UDPATE_USER, userAccountData),
-    userModal(UPDATE_USER_DETAILS, userDetailsData),
+    modal(UDPATE_USER, userAccountData),
+    modal(UPDATE_USER_DETAILS, userDetailsData),
     relationshipPromises
   ])
 

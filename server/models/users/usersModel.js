@@ -16,11 +16,14 @@ function relationModal(query, data) {
   });
 }
 
-function userModal(query, data) {
+function modal(query, data) {
   return new Promise((resolve, reject) => {
     try {
       pool.query(query, data, (error, results) => {
-        if (error) throw new Error({ messsage: error.message });
+        if (error) {
+          console.log(error);
+          throw new Error({ messsage: error.message });
+        }
 
         resolve(results);
       });
@@ -31,6 +34,6 @@ function userModal(query, data) {
 }
 
 module.exports = {
-  userModal,
+  modal,
   relationModal
 };
