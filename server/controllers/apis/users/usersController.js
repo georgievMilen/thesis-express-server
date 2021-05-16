@@ -4,16 +4,14 @@ const {
   GET_USER_DATA,
   INSERT_USER,
   UDPATE_USER,
-  UPDATE_USER_DETAILS,
-  GET_INTEREST_IN_RELATION,
-  UPDATE_RELATIONSHIPS
+  GET_GENDER_ID
 } = require("../../../constants");
 const {
   refreshTokenGenerate,
   accessTokenGenerate
 } = require("../../../utils/jwtUtil");
 const bcrypt = require("bcrypt");
-const { modal, relationModal } = require("../../../models/users/usersModel");
+const { modal } = require("../../../models/users/usersModel");
 
 function logoutUserAction(req, res) {
   req.session.loggedin = false;
@@ -21,7 +19,7 @@ function logoutUserAction(req, res) {
 }
 
 async function createUserAction(req, res, next) {
-  const { password, first_name, last_name, email, username } = req.body;
+  const { password, email } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const refresh_token = refreshTokenGenerate(email);
@@ -34,6 +32,8 @@ async function createUserAction(req, res, next) {
 
   modal(INSERT_USER, userData)
     .then((result) => {
+      if (result.length < 1)
+        next(ApiError.badRequest("A problem with the DB occured."));
       res.status(200).json("Successfull registration");
     })
     .catch((error) => {
@@ -45,16 +45,13 @@ function getProfileInfo(req, res, next) {
   const url = req.url.split("=");
   const email = url[1];
 
-  Promise.all([
-    modal(GET_USER_DATA, email),
-    relationModal(GET_INTEREST_IN_RELATION, email)
-  ])
+  modal(GET_USER_DATA, email)
     .then((result) => {
-      const profileInfo = result[0][0];
+      if (result.length < 1)
+        next(ApiError.badRequest("A problem with the DB occured."));
+      const profileInfo = result[0];
 
-      const profileRelationship = result[1];
-      console.log(result);
-      res.status(200).send({ profileInfo, profileRelationship });
+      res.status(200).send(profileInfo);
     })
     .catch((error) => {
       next(error);
@@ -68,44 +65,44 @@ function loginUserAction(req, res) {
   res.status(200).json("Successfull login");
 }
 
-function updateProfile(req, res, next) {
+async function updateProfile(req, res, next) {
   // Send req.body to a function that will save to DB.
   const {
-    firstName,
-    lastName,
+    firstName: first_name,
+    lastName: last_name,
     email,
+    username,
     age,
+    gender,
     weight,
     height,
-    eyeColor,
-    hairColor,
-    relArrForDB,
-    interestGenderForDB
+    eyeColor: eye_colour,
+    hairColor: hair_colour
   } = req.body;
 
-  console.log(req.body);
-  const userAccountData = [firstName, lastName, email];
-  const userDetailsData = [age, height, weight, hairColor, eyeColor, email];
+  const genderID = await modal(GET_GENDER_ID, [gender]);
+  if (genderID.length < 1)
+    next(ApiError.badRequest("A problem with the DB occured."));
+  const [{ id: gender_id }] = genderID;
 
-  const relationshipPromises = [];
-  relArrForDB.forEach((relation) => {
-    const promise = relationModal(UPDATE_RELATIONSHIPS, [
-      relation.checked,
-      email,
-      relation.name
-    ]);
-    relationshipPromises.push(promise);
-  });
+  const userAccountData = [
+    first_name,
+    last_name,
+    email,
+    username,
+    age,
+    gender_id,
+    weight,
+    height,
+    eye_colour,
+    hair_colour,
+    email
+  ];
 
-  Promise.all([
-    modal(UDPATE_USER, userAccountData),
-    modal(UPDATE_USER_DETAILS, userDetailsData),
-    relationshipPromises
-  ])
-
+  modal(UDPATE_USER, userAccountData)
     .then((result) => {
-      console.log("Success");
-
+      if (result.affectedRows < 1)
+        next(ApiError.badRequest("A problem with the DB occured."));
       res.status(200).json("User successfully updated.");
     })
     .catch((error) => {

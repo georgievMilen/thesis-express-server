@@ -1,5 +1,7 @@
 const multer = require("multer");
 const BASEDIR = require("../constants/constants");
+const { UPDATE_IMAGE, GET_IMAGE } = require("../constants/imageQueries");
+const modal = require("../models/users/usersModel");
 const {
   getImageDB,
   updateImageIsActiveDB
@@ -26,27 +28,38 @@ const uploadFileToDisk = multer({ storage: storage, fileFilter: imageFilter });
 
 function imageAlreadyUploaded(req, res, next) {
   const { id } = req.params;
-  getImageDB(id)
-    .then((image) => {
-      if (!image) {
-        res.locals.imageAlreadyUploaded = false;
-        return next();
-      }
-      res.locals.imageAlreadyUploaded = true;
-      next();
-    })
-    .catch((err) => next(err));
+  modal(GET_IMAGE, id).then((image) => {
+    if (!image) {
+      res.locals.imageAlreadyUploaded = false;
+      return next();
+    }
+    res.locals.imageAlreadyUploaded = true;
+    next();
+  });
+  // getImageDB(id)
+  //   .then((image) => {
+  //     if (!image) {
+  //       res.locals.imageAlreadyUploaded = false;
+  //       return next();
+  //     }
+  //     res.locals.imageAlreadyUploaded = true;
+  //     next();
+  //   })
+  //   .catch((err) => next(err));
 }
 
 function updateImageIsActive(req, res, next) {
   const { imageAlreadyUploaded } = res.locals;
   const { id } = req.params;
   if (!imageAlreadyUploaded) return next();
-  updateImageIsActiveDB(id, false)
-    .then(() => {
-      next();
-    })
+  modal(UPDATE_IMAGE, id)
+    .then(() => next())
     .catch((err) => next(err));
+  // updateImageIsActiveDB(id, false)
+  //   .then(() => {
+  //     next();
+  //   })
+  //   .catch((err) => next(err));
 }
 
 module.exports = {

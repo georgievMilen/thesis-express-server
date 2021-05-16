@@ -1,6 +1,6 @@
 "use strict";
 
-const pool = require("../../../configs/db");
+const { pool } = require("../../../configs/db");
 
 function insertImageDB(imageData) {
   const query = "INSERT INTO user_photo SET ?";
