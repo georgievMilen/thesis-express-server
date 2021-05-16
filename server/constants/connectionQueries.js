@@ -1,0 +1,32 @@
+const {
+  CONNECTIONS_TABLE,
+  USER_ACCOUNT_TABLE,
+  POSTERS_TABLE
+} = require("./tables");
+
+const GET_CONNECTION_IDS =
+  `SELECT ${CONNECTIONS_TABLE}.id, ${CONNECTIONS_TABLE}.poster_id, ` +
+  ` ${CONNECTIONS_TABLE}.user_id, ${CONNECTIONS_TABLE}.response, ` +
+  ` ${POSTERS_TABLE}.title, ${POSTERS_TABLE}.image ` +
+  ` FROM ${USER_ACCOUNT_TABLE} ` +
+  ` RIGHT JOIN ${POSTERS_TABLE} ON ${USER_ACCOUNT_TABLE}.id = ${POSTERS_TABLE}.user_id ` +
+  ` RIGHT JOIN ${CONNECTIONS_TABLE} ON ${CONNECTIONS_TABLE}.poster_id = ${POSTERS_TABLE}.id ` +
+  ` WHERE ${USER_ACCOUNT_TABLE}.email = ? `;
+
+const GET_CONNECTION_WUSER =
+  `SELECT ${CONNECTIONS_TABLE}.id, ${CONNECTIONS_TABLE}.response, ` +
+  ` ${POSTERS_TABLE}.title AS poster_title, ${POSTERS_TABLE}.image AS poster_image, ` +
+  ` ${USER_ACCOUNT_TABLE}.id AS user_id, ${USER_ACCOUNT_TABLE}.first_name, ${USER_ACCOUNT_TABLE}.last_name` +
+  ` FROM ${CONNECTIONS_TABLE} ` +
+  ` INNER JOIN ${POSTERS_TABLE} ` +
+  ` ON ${POSTERS_TABLE}.id = ${CONNECTIONS_TABLE}.poster_id ` +
+  ` INNER JOIN ${USER_ACCOUNT_TABLE} ` +
+  ` ON ${USER_ACCOUNT_TABLE}.id = ${CONNECTIONS_TABLE}.user_id ` +
+  ` WHERE ${CONNECTIONS_TABLE}.id = ?`;
+
+const UPDATE_CONNECTION = ` UPDATE ${CONNECTIONS_TABLE} SET response = ? WHERE id = ?`;
+module.exports = {
+  GET_CONNECTION_IDS,
+  GET_CONNECTION_WUSER,
+  UPDATE_CONNECTION
+};

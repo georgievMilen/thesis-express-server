@@ -1,7 +1,7 @@
-const { modal } = require("../../../models/users/usersModel");
+const { model } = require("../../../models/model");
 const { GET_USERS_DATA } = require("../../../constants/index");
 const searchForPeople = (req, res, next) => {
-  modal(GET_USERS_DATA)
+  model(GET_USERS_DATA)
     .then((results) => {
       res.status(200).send(results);
     })

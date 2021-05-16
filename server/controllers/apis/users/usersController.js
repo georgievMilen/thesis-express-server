@@ -11,7 +11,7 @@ const {
   accessTokenGenerate
 } = require("../../../utils/jwtUtil");
 const bcrypt = require("bcrypt");
-const { modal } = require("../../../models/users/usersModel");
+const { model } = require("../../../models/model");
 
 function logoutUserAction(req, res) {
   req.session.loggedin = false;
@@ -30,7 +30,7 @@ async function createUserAction(req, res, next) {
     refresh_token
   };
 
-  modal(INSERT_USER, userData)
+  model(INSERT_USER, userData)
     .then((result) => {
       if (result.length < 1)
         next(ApiError.badRequest("A problem with the DB occured."));
@@ -45,7 +45,7 @@ function getProfileInfo(req, res, next) {
   const url = req.url.split("=");
   const email = url[1];
 
-  modal(GET_USER_DATA, email)
+  model(GET_USER_DATA, email)
     .then((result) => {
       if (result.length < 1)
         next(ApiError.badRequest("A problem with the DB occured."));
@@ -80,7 +80,7 @@ async function updateProfile(req, res, next) {
     hairColor: hair_colour
   } = req.body;
 
-  const genderID = await modal(GET_GENDER_ID, [gender]);
+  const genderID = await model(GET_GENDER_ID, [gender]);
   if (genderID.length < 1)
     next(ApiError.badRequest("A problem with the DB occured."));
   const [{ id: gender_id }] = genderID;
@@ -99,7 +99,7 @@ async function updateProfile(req, res, next) {
     email
   ];
 
-  modal(UDPATE_USER, userAccountData)
+  model(UDPATE_USER, userAccountData)
     .then((result) => {
       if (result.affectedRows < 1)
         next(ApiError.badRequest("A problem with the DB occured."));

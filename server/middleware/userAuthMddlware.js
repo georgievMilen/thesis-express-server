@@ -1,4 +1,4 @@
-const { modal } = require("../models/users/usersModel");
+const { model } = require("../models/model");
 const bcrypt = require("bcrypt");
 const { GET_PW_BY_EMAIL, GET_EMAIL, GET_USERNAME } = require("../constants");
 const { credentialIsTaken } = require("../utils/credentialIsFree");
@@ -19,7 +19,7 @@ async function credetialsNotTaken(req, res, next) {
 function loginVerify(req, res, next) {
   const { email, password } = req.body;
 
-  modal(GET_PW_BY_EMAIL, email)
+  model(GET_PW_BY_EMAIL, email)
     .then(async (result) => {
       if (!result.length) return next("Incorrect email or password");
       const match = await bcrypt.compare(password, result[0].password);

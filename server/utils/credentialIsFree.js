@@ -1,7 +1,7 @@
-const { modal } = require("../models/users/usersModel");
+const { model } = require("../models/model");
 function credentialIsTaken(query, credential) {
   let res = "";
-  return modal(query, credential)
+  return model(query, credential)
     .then((result) => {
       if (!result.length) return;
       res = credential + " already taken!";

@@ -14,7 +14,6 @@ const {
 } = require("./genderQueries");
 const {
   GET_COUNTRY,
-
   INSERT_POSTER_REGION,
   GET_ALL_PR
 } = require("./regionsQueries");
@@ -37,7 +36,11 @@ const {
   INSERT_INTEREST_IN_RELATION,
   GET_INTEREST_IN_RELATION
 } = require("./queries");
-
+const {
+  GET_CONNECTION_IDS,
+  GET_CONNECTION_WUSER,
+  UPDATE_CONNECTION
+} = require("./connectionQueries");
 module.exports = {
   // User
   GET_EMAIL,
@@ -72,5 +75,9 @@ module.exports = {
   // REGIONS
   GET_COUNTRY,
   GET_ALL_PR,
-  INSERT_POSTER_REGION
+  INSERT_POSTER_REGION,
+  // CONNECTIONS
+  GET_CONNECTION_IDS,
+  GET_CONNECTION_WUSER,
+  UPDATE_CONNECTION
 };
