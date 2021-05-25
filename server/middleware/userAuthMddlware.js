@@ -27,9 +27,7 @@ function loginVerify(req, res, next) {
       if (!match) return next("Incorrect email or password");
       next();
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch((err) => next(err));
 }
 
 module.exports = {

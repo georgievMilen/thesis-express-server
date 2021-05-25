@@ -5,6 +5,7 @@ const REGIONS_TABLE = "regions";
 const POSTER_REGION_TABLE = "poster_region";
 const POSTER_GENDER_TABLE = "poster_gender";
 const CONNECTIONS_TABLE = "connections";
+const CHAT_TABLE = "chats";
 module.exports = {
   USER_ACCOUNT_TABLE,
   GENDERS_TABLE,
@@ -12,5 +13,6 @@ module.exports = {
   REGIONS_TABLE,
   POSTER_REGION_TABLE,
   POSTER_GENDER_TABLE,
-  CONNECTIONS_TABLE
+  CONNECTIONS_TABLE,
+  CHAT_TABLE
 };

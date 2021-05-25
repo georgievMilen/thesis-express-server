@@ -33,7 +33,7 @@ async function createUserAction(req, res, next) {
   model(INSERT_USER, userData)
     .then((result) => {
       if (result.length < 1)
-        next(ApiError.badRequest("A problem with the DB occured."));
+        return next(ApiError.badRequest("A problem with the DB occured."));
       res.status(200).json("Successfull registration");
     })
     .catch((error) => {
@@ -48,14 +48,12 @@ function getProfileInfo(req, res, next) {
   model(GET_USER_DATA, email)
     .then((result) => {
       if (result.length < 1)
-        next(ApiError.badRequest("A problem with the DB occured."));
+        return next(ApiError.badRequest("A problem with the DB occured."));
       const profileInfo = result[0];
 
       res.status(200).send(profileInfo);
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => next(error));
 }
 
 function loginUserAction(req, res) {
@@ -82,7 +80,7 @@ async function updateProfile(req, res, next) {
 
   const genderID = await model(GET_GENDER_ID, [gender]);
   if (genderID.length < 1)
-    next(ApiError.badRequest("A problem with the DB occured."));
+    return next(ApiError.badRequest("A problem with the DB occured."));
   const [{ id: gender_id }] = genderID;
 
   const userAccountData = [
@@ -102,12 +100,10 @@ async function updateProfile(req, res, next) {
   model(UDPATE_USER, userAccountData)
     .then((result) => {
       if (result.affectedRows < 1)
-        next(ApiError.badRequest("A problem with the DB occured."));
+        return next(ApiError.badRequest("A problem with the DB occured."));
       res.status(200).json("User successfully updated.");
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => next(error));
 }
 
 module.exports = {

@@ -4,29 +4,50 @@ const {
   POSTERS_TABLE
 } = require("./tables");
 
-const GET_CONNECTION_IDS =
-  `SELECT ${CONNECTIONS_TABLE}.id, ${CONNECTIONS_TABLE}.poster_id, ` +
-  ` ${CONNECTIONS_TABLE}.user_id, ${CONNECTIONS_TABLE}.response, ` +
-  ` ${POSTERS_TABLE}.title, ${POSTERS_TABLE}.image ` +
+const CREATE_CONNECTION =
+  "INSERT INTO " + CONNECTIONS_TABLE + " SET poster_id = ?, user_id = ?";
+
+const GET_REQUEST_IDS =
+  `SELECT ${CONNECTIONS_TABLE}.id AS connection_id, ${CONNECTIONS_TABLE}.poster_id, ` +
+  `  ${CONNECTIONS_TABLE}.response, ` +
+  ` ${POSTERS_TABLE}.title, ${POSTERS_TABLE}.image AS poster_image ` +
   ` FROM ${USER_ACCOUNT_TABLE} ` +
   ` RIGHT JOIN ${POSTERS_TABLE} ON ${USER_ACCOUNT_TABLE}.id = ${POSTERS_TABLE}.user_id ` +
   ` RIGHT JOIN ${CONNECTIONS_TABLE} ON ${CONNECTIONS_TABLE}.poster_id = ${POSTERS_TABLE}.id ` +
   ` WHERE ${USER_ACCOUNT_TABLE}.email = ? `;
 
-const GET_CONNECTION_WUSER =
-  `SELECT ${CONNECTIONS_TABLE}.id, ${CONNECTIONS_TABLE}.response, ` +
-  ` ${POSTERS_TABLE}.title AS poster_title, ${POSTERS_TABLE}.image AS poster_image, ` +
-  ` ${USER_ACCOUNT_TABLE}.id AS user_id, ${USER_ACCOUNT_TABLE}.first_name, ${USER_ACCOUNT_TABLE}.last_name` +
+const GET_REQUESTS_WUSER =
+  `SELECT ${CONNECTIONS_TABLE}.id as connection_id, ` +
+  ` ${USER_ACCOUNT_TABLE}.id AS user_id, ${USER_ACCOUNT_TABLE}.first_name, ` +
+  ` ${USER_ACCOUNT_TABLE}.last_name, ${USER_ACCOUNT_TABLE}.email ` +
   ` FROM ${CONNECTIONS_TABLE} ` +
-  ` INNER JOIN ${POSTERS_TABLE} ` +
-  ` ON ${POSTERS_TABLE}.id = ${CONNECTIONS_TABLE}.poster_id ` +
   ` INNER JOIN ${USER_ACCOUNT_TABLE} ` +
   ` ON ${USER_ACCOUNT_TABLE}.id = ${CONNECTIONS_TABLE}.user_id ` +
   ` WHERE ${CONNECTIONS_TABLE}.id = ?`;
 
+const GET_CONN_BY_UID =
+  ` SELECT ${CONNECTIONS_TABLE}.id as connection_id, ${CONNECTIONS_TABLE}.response ` +
+  ` FROM ${USER_ACCOUNT_TABLE} ` +
+  ` LEFT JOIN ${CONNECTIONS_TABLE} ON ${CONNECTIONS_TABLE}.user_id = ${USER_ACCOUNT_TABLE}.id ` +
+  ` WHERE ${USER_ACCOUNT_TABLE}.id = ?`;
+
+const GET_POS_USER_BY_CON_ID =
+  `SELECT  ` +
+  ` ${CONNECTIONS_TABLE}.poster_id, ${POSTERS_TABLE}.image AS poster_image,` +
+  ` ${POSTERS_TABLE}.title, ${POSTERS_TABLE}.user_id, ` +
+  ` ${USER_ACCOUNT_TABLE}.first_name, ${USER_ACCOUNT_TABLE}.last_name, ` +
+  ` ${USER_ACCOUNT_TABLE}.email ` +
+  ` FROM ${CONNECTIONS_TABLE} ` +
+  ` INNER JOIN ${POSTERS_TABLE} ON ${CONNECTIONS_TABLE}.poster_id = ${POSTERS_TABLE}.id ` +
+  ` INNER JOIN ${USER_ACCOUNT_TABLE} ON ${POSTERS_TABLE}.user_id = ${USER_ACCOUNT_TABLE}.id ` +
+  ` WHERE ${CONNECTIONS_TABLE}.id = ?`;
+
 const UPDATE_CONNECTION = ` UPDATE ${CONNECTIONS_TABLE} SET response = ? WHERE id = ?`;
 module.exports = {
-  GET_CONNECTION_IDS,
-  GET_CONNECTION_WUSER,
+  CREATE_CONNECTION,
+  GET_REQUEST_IDS,
+  GET_REQUESTS_WUSER,
+  GET_POS_USER_BY_CON_ID,
+  GET_CONN_BY_UID,
   UPDATE_CONNECTION
 };

@@ -19,13 +19,9 @@ const verifyRefreshToken = (req, res, next) => {
             if (decoded) next();
           }
         })
-        .catch((error) => {
-          next(error);
-        });
+        .catch((error) => next(error));
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => next(error));
 };
 
 module.exports = { verifyRefreshToken };
