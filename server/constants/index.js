@@ -45,7 +45,7 @@ const {
   GET_CONN_BY_UID,
   GET_REQUESTS_WUSER
 } = require("./connectionQueries");
-const { GET_MESSAGES } = require("./chats");
+const { GET_MESSAGES, POST_MESSAGE } = require("./chats");
 module.exports = {
   // User
   GET_EMAIL,
@@ -89,5 +89,6 @@ module.exports = {
   GET_CONN_BY_UID,
   UPDATE_CONNECTION,
   // MESSAGES
-  GET_MESSAGES
+  GET_MESSAGES,
+  POST_MESSAGE
 };

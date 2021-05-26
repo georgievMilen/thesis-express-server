@@ -10,6 +10,8 @@ const GET_MESSAGES =
   ` FROM ${CONNECTIONS_TABLE} ` +
   ` LEFT JOIN ${CHAT_TABLE} ON ${CHAT_TABLE}.connection_id = ${CONNECTIONS_TABLE}.id ` +
   ` INNER JOIN ${USER_ACCOUNT_TABLE} ON ${USER_ACCOUNT_TABLE}.id = ${CHAT_TABLE}.user_id ` +
-  ` WHERE ${CONNECTIONS_TABLE}.id = ?`;
+  ` WHERE ${CONNECTIONS_TABLE}.id = ? ` +
+  ` ORDER BY ${CHAT_TABLE}.ts ASC`;
 
-module.exports = { GET_MESSAGES };
+const POST_MESSAGE = ` INSERT INTO ${CHAT_TABLE} SET connection_id = ?, text = ?, user_id = ?`;
+module.exports = { GET_MESSAGES, POST_MESSAGE };

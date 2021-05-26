@@ -1,7 +1,8 @@
 const SocketIO = require("socket.io");
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./chatUsers");
 const { model } = require("../models/model");
-const { GET_MESSAGES } = require("../constants");
+const { GET_MESSAGES, GET_USER_DATA, POST_MESSAGE } = require("../constants");
+
 // let interval;
 
 function socketIO(server) {
@@ -22,20 +23,30 @@ function socketIO(server) {
         room: "user.room",
         users: "getUsersInRoom(user.room)"
       });
-      const messages = await model(GET_MESSAGES, room);
-      console.log(messages, room);
-      socket.emit("loadMessages", messages);
-      callback();
+      const mssgs = await model(GET_MESSAGES, room);
+
+      callback({ mssgs: mssgs });
     });
 
-    socket.on("sendMessage", (data, callback) => {
-      console.log(data);
-
-      const user = getUser(socket.id);
-      asd;
-
-      // io.to(user.room).emit("message", {user: user.name, text: message});
-
+    socket.on("sendMessage", async (data, callback) => {
+      const { email, room, message } = data;
+      const mssg = {};
+      const user = await model(GET_USER_DATA, email);
+      console.log(user);
+      const m_data = [room, message, user[0].id];
+      const mssg_data = await model(POST_MESSAGE, m_data);
+      console.log(mssg_data);
+      if (mssg_data.affectedRows > 0) {
+        Object.assign(mssg, {
+          message_id: mssg_data.insertId,
+          email,
+          first_name: user[0].first_name,
+          last_name: user[0].last_name,
+          text: message,
+          user_id: user[0].id
+        });
+        io.to(room).emit("message", mssg);
+      }
       callback();
     });
 
