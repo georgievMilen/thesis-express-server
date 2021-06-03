@@ -1,15 +1,13 @@
 "use strict";
 
-const {
-  GET_USER_DATA,
-  INSERT_USER,
-  UDPATE_USER,
-  GET_GENDER_ID
-} = require("../../../constants");
-const {
-  refreshTokenGenerate,
-  accessTokenGenerate
-} = require("../../../utils/jwtUtil");
+const { GET_USER_DATA } = require("../../../constants");
+const { INSERT_USER } = require("../../../constants");
+const { UDPATE_USER } = require("../../../constants");
+const { GET_GENDER_ID } = require("../../../constants");
+
+const { refreshTokenGenerate } = require("../../../utils/jwtUtil");
+const { accessTokenGenerate } = require("../../../utils/jwtUtil");
+
 const bcrypt = require("bcrypt");
 const { model } = require("../../../models/model");
 
@@ -44,8 +42,8 @@ async function createUserAction(req, res, next) {
 function getProfileInfo(req, res, next) {
   const url = req.url.split("=");
   const email = url[1];
-
-  model(GET_USER_DATA, email)
+  const decodeEmail = decodeURIComponent(email);
+  model(GET_USER_DATA, decodeEmail)
     .then((result) => {
       if (result.length < 1)
         return next(ApiError.badRequest("A problem with the DB occured."));
@@ -64,7 +62,8 @@ function loginUserAction(req, res) {
 }
 
 async function updateProfile(req, res, next) {
-  // Send req.body to a function that will save to DB.
+  const { file, body } = req;
+  let image = "";
   const {
     firstName: first_name,
     lastName: last_name,
@@ -75,8 +74,12 @@ async function updateProfile(req, res, next) {
     weight,
     height,
     eyeColor: eye_colour,
-    hairColor: hair_colour
-  } = req.body;
+    hairColor: hair_colour,
+    imageName
+  } = body;
+
+  image = imageName;
+  if (file) image = file.filename;
 
   const genderID = await model(GET_GENDER_ID, [gender]);
   if (genderID.length < 1)
@@ -94,6 +97,7 @@ async function updateProfile(req, res, next) {
     height,
     eye_colour,
     hair_colour,
+    image,
     email
   ];
 
@@ -111,5 +115,6 @@ module.exports = {
   loginUserAction,
   logoutUserAction,
   updateProfile,
+
   getProfileInfo
 };

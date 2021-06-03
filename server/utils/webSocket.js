@@ -1,5 +1,5 @@
 const SocketIO = require("socket.io");
-const { addUser, removeUser, getUser, getUsersInRoom } = require("./chatUsers");
+
 const { model } = require("../models/model");
 const { GET_MESSAGES, GET_USER_DATA, POST_MESSAGE } = require("../constants");
 
@@ -32,10 +32,10 @@ function socketIO(server) {
       const { email, room, message } = data;
       const mssg = {};
       const user = await model(GET_USER_DATA, email);
-      console.log(user);
+
       const m_data = [room, message, user[0].id];
       const mssg_data = await model(POST_MESSAGE, m_data);
-      console.log(mssg_data);
+
       if (mssg_data.affectedRows > 0) {
         Object.assign(mssg, {
           message_id: mssg_data.insertId,

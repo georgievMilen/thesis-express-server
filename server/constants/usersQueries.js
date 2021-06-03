@@ -14,6 +14,8 @@ const GET_USERS_DATA =
   ".first_name, " +
   USER_ACCOUNT_TABLE +
   ".last_name, " +
+  USER_ACCOUNT_TABLE +
+  ".image, " +
   GENDERS_TABLE +
   ".name AS gender, " +
   USER_ACCOUNT_TABLE +
@@ -52,8 +54,9 @@ const GET_USER_AUTH =
 const UDPATE_USER =
   "UPDATE " +
   USER_ACCOUNT_TABLE +
-  " SET first_name = ?, last_name = ?, email = ?, username = ?, age = ?, gender_id = ?, weight = ?, height = ?, " +
-  " eye_colour = ?, hair_colour = ? WHERE email = ?";
+  " SET first_name = ?, last_name = ?, email = ?, username = ?, " +
+  " age = ?, gender_id = ?, weight = ?, height = ?, " +
+  " eye_colour = ?, hair_colour = ?, image = ?  WHERE email = ?";
 
 module.exports = {
   GET_EMAIL,
