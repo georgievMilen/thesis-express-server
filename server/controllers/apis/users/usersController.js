@@ -4,10 +4,10 @@ const { GET_USER_DATA } = require("../../../constants");
 const { INSERT_USER } = require("../../../constants");
 const { UDPATE_USER } = require("../../../constants");
 const { GET_GENDER_ID } = require("../../../constants");
-
 const { refreshTokenGenerate } = require("../../../utils/jwtUtil");
 const { accessTokenGenerate } = require("../../../utils/jwtUtil");
-
+const { emailFromUrl } = require("../../../utils/emaiFromUrl");
+const ApiError = require("../../../error/ApiError");
 const bcrypt = require("bcrypt");
 const { model } = require("../../../models/model");
 
@@ -40,10 +40,9 @@ async function createUserAction(req, res, next) {
 }
 
 function getProfileInfo(req, res, next) {
-  const url = req.url.split("=");
-  const email = url[1];
-  const decodeEmail = decodeURIComponent(email);
-  model(GET_USER_DATA, decodeEmail)
+  const email = emailFromUrl(req.url);
+
+  model(GET_USER_DATA, email)
     .then((result) => {
       if (result.length < 1)
         return next(ApiError.badRequest("A problem with the DB occured."));
@@ -62,49 +61,60 @@ function loginUserAction(req, res) {
 }
 
 async function updateProfile(req, res, next) {
-  const { file, body } = req;
+  const { file } = req;
+
   let image = "";
+  const body = Object.assign({}, req.body);
   const {
-    firstName: first_name,
-    lastName: last_name,
+    firstName,
+    lastName,
+    birthDate,
     email,
     username,
     age,
     gender,
     weight,
     height,
-    eyeColor: eye_colour,
-    hairColor: hair_colour,
-    imageName
+    eyeColor,
+    hairColor,
+    imageName,
+    about
   } = body;
 
+  console.log({ birthDate });
   image = imageName;
   if (file) image = file.filename;
 
-  const genderID = await model(GET_GENDER_ID, [gender]);
-  if (genderID.length < 1)
+  const genderID = await model(GET_GENDER_ID, gender);
+  if (genderID.length < 1) {
+    console.error("Problem with genders!");
     return next(ApiError.badRequest("A problem with the DB occured."));
+  }
   const [{ id: gender_id }] = genderID;
 
   const userAccountData = [
-    first_name,
-    last_name,
+    firstName,
+    lastName,
+    birthDate,
     email,
     username,
     age,
     gender_id,
     weight,
     height,
-    eye_colour,
-    hair_colour,
+    eyeColor,
+    hairColor,
     image,
+    about,
     email
   ];
 
   model(UDPATE_USER, userAccountData)
     .then((result) => {
-      if (result.affectedRows < 1)
+      if (result.affectedRows < 1) {
+        console.error("Problem while updatind user!");
         return next(ApiError.badRequest("A problem with the DB occured."));
+      }
       res.status(200).json("User successfully updated.");
     })
     .catch((error) => next(error));

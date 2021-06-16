@@ -1,6 +1,6 @@
 const { REGIONS_TABLE, POSTER_REGION_TABLE } = require("./tables");
 const GET_COUNTRY =
-  "SELECT id FROM " + REGIONS_TABLE + " WHERE country = ? AND city = ?";
+  "SELECT id FROM " + REGIONS_TABLE + " WHERE country = ? AND city = ? ";
 
 const GET_ALL_PR =
   "SELECT " +

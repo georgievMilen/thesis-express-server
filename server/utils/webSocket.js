@@ -1,7 +1,12 @@
 const SocketIO = require("socket.io");
 
 const { model } = require("../models/model");
-const { GET_MESSAGES, GET_USER_DATA, POST_MESSAGE } = require("../constants");
+const {
+  GET_MESSAGES,
+  GET_DIR_MESSAGES,
+  GET_USER_DATA,
+  POST_MESSAGE
+} = require("../constants");
 
 // let interval;
 
@@ -24,8 +29,8 @@ function socketIO(server) {
         users: "getUsersInRoom(user.room)"
       });
       const mssgs = await model(GET_MESSAGES, room);
-
-      callback({ mssgs: mssgs });
+      const dirMssgs = await model(GET_DIR_MESSAGES, room);
+      callback({ mssgs: [...mssgs, ...dirMssgs] });
     });
 
     socket.on("sendMessage", async (data, callback) => {
@@ -40,8 +45,8 @@ function socketIO(server) {
         Object.assign(mssg, {
           message_id: mssg_data.insertId,
           email,
-          first_name: user[0].first_name,
-          last_name: user[0].last_name,
+          firstName: user[0].firstName,
+          lastName: user[0].lastName,
           text: message,
           user_id: user[0].id
         });

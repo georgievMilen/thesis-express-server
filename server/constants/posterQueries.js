@@ -16,15 +16,15 @@ const GET_ALL_POSTSERS =
 const GET_ALL_POSTERS_WUSER =
   "SELECT " +
   POSTERS_TABLE +
-  ".id, " +
+  ".id as postId, " +
   POSTERS_TABLE +
-  ".user_id, " +
+  ".user_id AS userId, " +
   POSTERS_TABLE +
   ".text, " +
   POSTERS_TABLE +
-  ".age_to, " +
+  ".age_to AS ageTo, " +
   POSTERS_TABLE +
-  ".age_from, " +
+  ".age_from AS ageFrom, " +
   POSTERS_TABLE +
   ".title, " +
   POSTERS_TABLE +
@@ -34,9 +34,10 @@ const GET_ALL_POSTERS_WUSER =
   USER_ACCOUNT_TABLE +
   ".email, " +
   USER_ACCOUNT_TABLE +
-  ".first_name, " +
+  ".first_name AS firstName, " +
   USER_ACCOUNT_TABLE +
-  ".last_name FROM " +
+  ".last_name AS lastName " +
+  " FROM " +
   POSTERS_TABLE +
   " LEFT JOIN " +
   USER_ACCOUNT_TABLE +

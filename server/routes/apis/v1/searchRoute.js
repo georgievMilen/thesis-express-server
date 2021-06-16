@@ -4,6 +4,6 @@ const {
   searchForPeople
 } = require("../../../controllers/apis/search/searchController");
 
-router.get("/", searchForPeople);
+router.get("/getPeople", searchForPeople);
 
 module.exports = router;
