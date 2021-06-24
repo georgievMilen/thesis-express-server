@@ -37,11 +37,18 @@ const GET_SEND_P_CONN =
   ` ${CONNECTIONS_TABLE}.response, ` +
   ` ${POSTERS_TABLE}.image AS posterImage,  ` +
   ` ${POSTERS_TABLE}.title AS posterTitle,  ` +
+  ` ${POSTERS_TABLE}.text AS posterText, ` +
   ` poster_owner.id AS userId, ` +
   ` poster_owner.first_name AS firstName,  ` +
   ` poster_owner.last_name AS lastName, ` +
   ` poster_owner.email AS email, ` +
-  ` poster_owner.image AS userImage ` +
+  ` poster_owner.image AS userImage, ` +
+  ` poster_owner.age, ` +
+  ` poster_owner.height, ` +
+  ` poster_owner.weight, ` +
+  ` poster_owner.hair_colour AS hairColour, ` +
+  ` poster_owner.eye_colour AS eyeColour, ` +
+  ` poster_owner.about ` +
   ` FROM ${USER_ACCOUNT_TABLE} ` +
   ` LEFT JOIN ${CONNECTIONS_TABLE} ON ${CONNECTIONS_TABLE}.user_id = ${USER_ACCOUNT_TABLE}.id ` +
   ` INNER JOIN ${POSTERS_TABLE} ON ${CONNECTIONS_TABLE}.poster_id = ${POSTERS_TABLE}.id ` +
@@ -53,11 +60,18 @@ const GET_REC_P_CONN =
   `  ${CONNECTIONS_TABLE}.response, ` +
   `  ${POSTERS_TABLE}.image AS posterImage, ` +
   `  ${POSTERS_TABLE}.title AS posterTitle, ` +
+  `  ${POSTERS_TABLE}.text AS posterText, ` +
   `  sender.id AS userId, ` +
   `  sender.first_name AS firstName, ` +
   `  sender.last_name AS lastName, ` +
   `  sender.email AS email, ` +
-  `  sender.image AS userImage ` +
+  `  sender.image AS userImage, ` +
+  ` sender.age, ` +
+  ` sender.height, ` +
+  ` sender.weight, ` +
+  ` sender.hair_colour AS hairColour, ` +
+  ` sender.eye_colour AS eyeColour, ` +
+  ` sender.about ` +
   `FROM ${USER_ACCOUNT_TABLE}` +
   ` RIGHT JOIN ${POSTERS_TABLE} ON ${POSTERS_TABLE}.user_id = users.id ` +
   ` INNER JOIN ${CONNECTIONS_TABLE} ON ${CONNECTIONS_TABLE}.poster_id = ${POSTERS_TABLE}.id ` +
@@ -71,7 +85,13 @@ const GET_SEND_DIR_CONN =
   ` user.image AS userImage, ` +
   ` user.first_name AS firstName, ` +
   ` user.last_name AS lastName, ` +
-  ` user.email ` +
+  ` user.email, ` +
+  ` user.age, ` +
+  ` user.height, ` +
+  ` user.weight, ` +
+  ` user.hair_colour AS hairColour, ` +
+  ` user.eye_colour AS eyeColour, ` +
+  ` user.about ` +
   ` FROM ${USER_ACCOUNT_TABLE} ` +
   ` RIGHT JOIN ${DIR_CONN_TABLE} ON ${USER_ACCOUNT_TABLE}.id = ${DIR_CONN_TABLE}.sender_id ` +
   ` INNER JOIN ${USER_ACCOUNT_TABLE} AS user ` +
@@ -85,7 +105,13 @@ const GET_REC_DIR_CONN =
   ` user.image AS userImage, ` +
   ` user.first_name AS firstName, ` +
   ` user.last_name AS lastName, ` +
-  ` user.email ` +
+  ` user.email, ` +
+  ` user.age , ` +
+  ` user.height, ` +
+  ` user.weight, ` +
+  ` user.hair_colour AS hairColour, ` +
+  ` user.eye_colour AS eyeColour, ` +
+  ` user.about ` +
   ` FROM ` +
   ` ${USER_ACCOUNT_TABLE} ` +
   ` RIGHT JOIN ${DIR_CONN_TABLE} ON ${USER_ACCOUNT_TABLE}.id = ${DIR_CONN_TABLE}.receiver_id ` +
