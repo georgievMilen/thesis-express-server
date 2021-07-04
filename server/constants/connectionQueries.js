@@ -16,7 +16,7 @@ const UPDATE_POST_REQ = ` UPDATE ${CONNECTIONS_TABLE} SET response = ? WHERE id 
 
 const GET_REQUEST_IDS =
   `SELECT ${CONNECTIONS_TABLE}.id AS connection_id, ${CONNECTIONS_TABLE}.poster_id, ` +
-  `  ${CONNECTIONS_TABLE}.response, ` +
+  ` ${CONNECTIONS_TABLE}.response, ` +
   ` ${POSTERS_TABLE}.title, ${POSTERS_TABLE}.image AS poster_image ` +
   ` FROM ${USER_ACCOUNT_TABLE} ` +
   ` RIGHT JOIN ${POSTERS_TABLE} ON ${USER_ACCOUNT_TABLE}.id = ${POSTERS_TABLE}.user_id ` +
@@ -72,7 +72,7 @@ const GET_REC_P_CONN =
   ` sender.hair_colour AS hairColour, ` +
   ` sender.eye_colour AS eyeColour, ` +
   ` sender.about ` +
-  `FROM ${USER_ACCOUNT_TABLE}` +
+  ` FROM ${USER_ACCOUNT_TABLE}` +
   ` RIGHT JOIN ${POSTERS_TABLE} ON ${POSTERS_TABLE}.user_id = users.id ` +
   ` INNER JOIN ${CONNECTIONS_TABLE} ON ${CONNECTIONS_TABLE}.poster_id = ${POSTERS_TABLE}.id ` +
   ` INNER JOIN ${USER_ACCOUNT_TABLE} AS sender ON ${CONNECTIONS_TABLE}.user_id = sender.id ` +
@@ -121,6 +121,16 @@ const GET_REC_DIR_CONN =
   ` WHERE ` +
   ` ${DIR_CONN_TABLE}.response = ? AND ${USER_ACCOUNT_TABLE}.id = ? `;
 
+const GET_REQ_BY_SENDER =
+  ` SELECT ${CONNECTIONS_TABLE}.id as connection_id, ` +
+  ` ${CONNECTIONS_TABLE}.poster_id, ` +
+  ` ${CONNECTIONS_TABLE}.user_id, ` +
+  ` ${CONNECTIONS_TABLE}.response ` +
+  ` FROM ${USER_ACCOUNT_TABLE} ` +
+  ` INNER JOIN ${CONNECTIONS_TABLE} ON ` +
+  ` ${CONNECTIONS_TABLE}.user_id = ${USER_ACCOUNT_TABLE}.id ` +
+  ` WHERE ${USER_ACCOUNT_TABLE}.email = ?`;
+
 module.exports = {
   CREATE_CONNECTION,
   GET_REQUEST_IDS,
@@ -131,5 +141,6 @@ module.exports = {
   GET_SEND_P_CONN,
   GET_SEND_DIR_CONN,
   GET_REC_P_CONN,
-  GET_REC_DIR_CONN
+  GET_REC_DIR_CONN,
+  GET_REQ_BY_SENDER
 };

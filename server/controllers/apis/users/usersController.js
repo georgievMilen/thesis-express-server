@@ -44,6 +44,7 @@ function getProfileInfo(req, res, next) {
 
   model(GET_USER_DATA, email)
     .then((result) => {
+      console.log(result);
       if (result.length < 1)
         return next(ApiError.badRequest("A problem with the DB occured."));
       const profileInfo = result[0];

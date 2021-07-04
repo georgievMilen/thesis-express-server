@@ -1,4 +1,5 @@
 const { model } = require("../../../models/model");
+const ApiError = require("../../../error/ApiError");
 const { emailFromUrl } = require("../../../utils/emaiFromUrl");
 const {
   GET_USERS_DATA,
@@ -9,6 +10,7 @@ const {
 
 const searchForPeople = async (req, res, next) => {
   const email = emailFromUrl(req.url);
+  console.log(email);
 
   const uid = await model(GET_UID_BY_EMAIL, email);
   if (uid.length === 0) {

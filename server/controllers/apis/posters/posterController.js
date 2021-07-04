@@ -10,11 +10,13 @@ const {
   INSERT_POSTER_GENDER,
   GET_ALL_POSTERS_WUSER,
   GET_MY_POSTERS,
-  DELETE_POSTER
+  DELETE_POSTER,
+  GET_REQ_BY_SENDER
 } = require("../../../constants");
 const { model } = require("../../../models/model");
 const ApiError = require("../../../error/ApiError");
 const { emailFromUrl } = require("../../../utils/emaiFromUrl");
+
 async function createPoster(req, res, next) {
   const { file } = req;
   const {
@@ -34,6 +36,7 @@ async function createPoster(req, res, next) {
   const gendersArr = genders.split(",");
   let age_to_num = null;
   let age_from_num = null;
+
   if (age_to !== "null") age_to_num = parseInt(age_to);
   if (age_from !== "null") age_from_num = parseInt(age_from);
 
@@ -53,8 +56,8 @@ async function createPoster(req, res, next) {
     title,
     type,
     image,
-    age_from_num,
-    age_to_num
+    age_to_num,
+    age_from_num
   ];
   const poster = await model(POST_POSTER, post_data);
   if (poster.length < 1) {
@@ -89,11 +92,14 @@ async function createPoster(req, res, next) {
 }
 
 function getAllPosters(req, res, next) {
+  const email = emailFromUrl(req.url);
+
   const posters = model(GET_ALL_POSTERS_WUSER);
   const genders = model(GET_ALL_PG);
   const regions = model(GET_ALL_PR);
+  const connetions = model(GET_REQ_BY_SENDER, email);
 
-  Promise.all([posters, genders, regions])
+  Promise.all([posters, genders, regions, connetions])
     .then((result) => {
       res.status(200).send(result);
     })
@@ -116,7 +122,7 @@ function getMyPosters(req, res, next) {
 const deletePoster = (req, res, next) => {
   const url = req.url.split("=");
   const id = url[1];
-
+  console.log(id);
   model(DELETE_POSTER, id)
     .then(() => {
       res.status(200).send("Poster was deleted!");

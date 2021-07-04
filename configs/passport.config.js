@@ -17,3 +17,4 @@ function initialize(passport) {
 }
 
 module.exports = initialize;
+// To delete
