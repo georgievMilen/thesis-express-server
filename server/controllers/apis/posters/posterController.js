@@ -11,7 +11,8 @@ const {
   GET_ALL_POSTERS_WUSER,
   GET_MY_POSTERS,
   DELETE_POSTER,
-  GET_REQ_BY_SENDER
+  GET_REQ_BY_SENDER,
+  TITLE_ORDER
 } = require("../../../constants");
 const { model } = require("../../../models/model");
 const ApiError = require("../../../error/ApiError");
@@ -94,7 +95,7 @@ async function createPoster(req, res, next) {
 function getAllPosters(req, res, next) {
   const email = emailFromUrl(req.url);
 
-  const posters = model(GET_ALL_POSTERS_WUSER);
+  const posters = model(GET_ALL_POSTERS_WUSER + TITLE_ORDER);
   const genders = model(GET_ALL_PG);
   const regions = model(GET_ALL_PR);
   const connetions = model(GET_REQ_BY_SENDER, email);
@@ -112,7 +113,9 @@ function getMyPosters(req, res, next) {
   const posters = model(GET_MY_POSTERS, email);
   const genders = model(GET_ALL_PG);
   const regions = model(GET_ALL_PR);
-  Promise.all([posters, genders, regions])
+  const connetions = model(GET_REQ_BY_SENDER, email);
+
+  Promise.all([posters, genders, regions, connetions])
     .then((result) => {
       res.status(200).send(result);
     })

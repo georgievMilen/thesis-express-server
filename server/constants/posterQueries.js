@@ -4,7 +4,8 @@ const {
   USER_ACCOUNT_TABLE,
   POSTER_REGION_TABLE,
   POSTER_GENDER_TABLE,
-  CHAT_TABLE
+  CHAT_TABLE,
+  GENDERS_TABLE
 } = require("./tables");
 const POST_POSTER =
   "INSERT INTO " +
@@ -25,10 +26,14 @@ const GET_ALL_POSTERS_WUSER =
   ` ${POSTERS_TABLE}.image, ` +
   ` ${USER_ACCOUNT_TABLE}.email, ` +
   ` ${USER_ACCOUNT_TABLE}.first_name AS firstName, ` +
-  ` ${USER_ACCOUNT_TABLE}.last_name AS lastName ` +
+  ` ${USER_ACCOUNT_TABLE}.last_name AS lastName, ` +
+  ` ${GENDERS_TABLE}.name AS gender` +
   ` FROM ${POSTERS_TABLE} ` +
   ` LEFT JOIN ${USER_ACCOUNT_TABLE} ` +
-  ` ON ${POSTERS_TABLE}.user_id = ${USER_ACCOUNT_TABLE}.id `;
+  ` ON ${POSTERS_TABLE}.user_id = ${USER_ACCOUNT_TABLE}.id ` +
+  ` INNER JOIN ${GENDERS_TABLE} ` +
+  ` ON ${GENDERS_TABLE}.id = ${USER_ACCOUNT_TABLE}.gender_id `;
+const TITLE_ORDER = ` ORDER BY ${POSTERS_TABLE}.title ASC `;
 
 const GET_MY_POSTERS =
   GET_ALL_POSTERS_WUSER + "WHERE " + USER_ACCOUNT_TABLE + ".email = ?";
@@ -54,5 +59,6 @@ module.exports = {
   GET_MY_POSTERS,
   GET_UID_BY_POSTER,
   GET_ALL_POSTERS_WUSER,
-  DELETE_POSTER
+  DELETE_POSTER,
+  TITLE_ORDER
 };

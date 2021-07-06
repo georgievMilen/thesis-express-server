@@ -6,7 +6,8 @@ const {
   GET_ALL_POSTERS_WUSER,
   GET_MY_POSTERS,
   DELETE_POSTER,
-  GET_UID_BY_POSTER
+  GET_UID_BY_POSTER,
+  TITLE_ORDER
 } = require("./posterQueries");
 const {
   GET_GENDER_ID,
@@ -73,6 +74,7 @@ module.exports = {
   GET_MY_POSTERS,
   GET_UID_BY_POSTER,
   DELETE_POSTER,
+  TITLE_ORDER,
   // REGIONS
   GET_COUNTRY,
   GET_ALL_PR,

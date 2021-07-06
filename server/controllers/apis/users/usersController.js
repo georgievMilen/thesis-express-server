@@ -44,7 +44,6 @@ function getProfileInfo(req, res, next) {
 
   model(GET_USER_DATA, email)
     .then((result) => {
-      console.log(result);
       if (result.length < 1)
         return next(ApiError.badRequest("A problem with the DB occured."));
       const profileInfo = result[0];
@@ -69,7 +68,7 @@ async function updateProfile(req, res, next) {
   const {
     firstName,
     lastName,
-    birthDate,
+
     email,
     username,
     age,
@@ -82,7 +81,6 @@ async function updateProfile(req, res, next) {
     about
   } = body;
 
-  console.log({ birthDate });
   image = imageName;
   if (file) image = file.filename;
 
@@ -96,7 +94,6 @@ async function updateProfile(req, res, next) {
   const userAccountData = [
     firstName,
     lastName,
-    birthDate,
     email,
     username,
     age,

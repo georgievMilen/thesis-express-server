@@ -8,7 +8,6 @@ const GET_ALL_USERS_DATA =
   ` ${USER_ACCOUNT_TABLE}.email, ` +
   ` ${USER_ACCOUNT_TABLE}.first_name AS firstName, ` +
   ` ${USER_ACCOUNT_TABLE}.last_name AS lastName, ` +
-  ` DATE_FORMAT(${USER_ACCOUNT_TABLE}.birth_date, '%Y/%m/%d') birthDate, ` +
   ` ${USER_ACCOUNT_TABLE}.image AS userImage, ` +
   ` ${GENDERS_TABLE}.name AS gender, ` +
   ` ${USER_ACCOUNT_TABLE}.age, ` +
@@ -45,7 +44,7 @@ const GET_USER_AUTH =
   `first_name, last_name, password, refresh_token FROM ${USER_ACCOUNT_TABLE} WHERE email = ?`;
 const UDPATE_USER =
   ` UPDATE ${USER_ACCOUNT_TABLE} ` +
-  ` SET first_name = ?, last_name = ?, birth_date = ?, email = ?, username = ?, ` +
+  ` SET first_name = ?, last_name = ?, email = ?, username = ?, ` +
   ` age = ?, gender_id = ?, weight = ?, height = ?, ` +
   ` eye_colour = ?, hair_colour = ?, image = ?, about = ? ` +
   ` WHERE email = ?`;
