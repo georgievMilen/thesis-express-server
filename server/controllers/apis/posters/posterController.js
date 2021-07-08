@@ -102,6 +102,7 @@ function getAllPosters(req, res, next) {
 
   Promise.all([posters, genders, regions, connetions])
     .then((result) => {
+      console.log(result[0]);
       res.status(200).send(result);
     })
     .catch((err) => next(err));
@@ -125,7 +126,7 @@ function getMyPosters(req, res, next) {
 const deletePoster = (req, res, next) => {
   const url = req.url.split("=");
   const id = url[1];
-  console.log(id);
+
   model(DELETE_POSTER, id)
     .then(() => {
       res.status(200).send("Poster was deleted!");

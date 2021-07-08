@@ -8,10 +8,6 @@ function init(server) {
     return next();
   });
 
-  server.get("/", function (req, res) {
-    res.redirect("/home");
-  });
-
   server.use("/api", apiRoute);
 }
 
