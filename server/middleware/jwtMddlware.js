@@ -1,30 +1,27 @@
 const jwt = require("jsonwebtoken");
-const { userModal } = require("../models/users/usersModel");
-const { updateRefreshToken } = require("../models/users/usersModel");
+const { model } = require("../models/model");
+const { updateRefreshToken } = require("../models/model");
 const { refreshTokenGenerate } = require("../utils/jwtUtil");
-const { UPDATE_REFRESH_TOKEN, EMAIL_QUERY } = require("../constants/constants");
+const { UPDATE_REFRESH_TOKEN, GET_USER_AUTH } = require("../constants/");
 
 const verifyRefreshToken = (req, res, next) => {
   const { email } = req.body;
-  userModal(EMAIL_QUERY, email)
+  const refreshToken = refreshTokenGenerate(email);
+  model(UPDATE_REFRESH_TOKEN, [refreshToken, email])
     .then((results) => {
-      const decoded = jwt.verify(
-        results[0].refresh_token,
-        process.env.REFRESH_TOKEN_SECRET
-      );
-      if (decoded) next();
-      const refreshToken = refreshTokenGenerate(email);
-      userModal(UPDATE_REFRESH_TOKEN, [refreshToken, email])
+      model(GET_USER_AUTH, email)
         .then((results) => {
-          next();
+          if (results[0].refresh_token) {
+            const decoded = jwt.verify(
+              results[0].refresh_token,
+              process.env.REFRESH_TOKEN_SECRET
+            );
+            if (decoded) next();
+          }
         })
-        .catch((error) => {
-          next(error);
-        });
+        .catch((error) => next(error));
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => next(error));
 };
 
 module.exports = { verifyRefreshToken };

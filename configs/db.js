@@ -8,4 +8,4 @@ var pool = mysql.createPool({
   database: process.env.DATABASE
 });
 
-module.exports = pool;
+module.exports = { pool, mysql };

@@ -1,48 +1,38 @@
-const {
-  getUserByEmail,
-  getUserByUsername
-} = require("../models/users/usersModel");
+const { model } = require("../models/model");
 const bcrypt = require("bcrypt");
+const { GET_PW_BY_EMAIL, GET_EMAIL, GET_USERNAME } = require("../constants");
+const { credentialIsTaken } = require("../utils/credentialIsFree");
+const ApiError = require("../error/ApiError");
 
-function emailNotTaken(req, res, next) {
-  const { email } = req.body;
-  getUserByEmail(email, (user, error) => {
-    if (error) return next(error);
+async function credetialsNotTaken(req, res, next) {
+  const { email, username } = req.body;
 
-    if (user.length) return next("Email already taken!");
+  const result = [];
 
-    next();
+  result.push(await credentialIsTaken(GET_EMAIL, email));
+  result.push(await credentialIsTaken(GET_USERNAME, username));
+  result.forEach((element) => {
+    if (element) return next(element);
   });
-}
-
-function usernameNotTaken(req, res, next) {
-  console.log(req.body);
-  const { username } = req.body;
-  getUserByUsername(username, (user, error) => {
-    if (error) return next(error);
-    if (user.length) return next("Username already taken!");
-
-    next(null, user);
-  });
+  next();
 }
 
 function loginVerify(req, res, next) {
   const { email, password } = req.body;
 
-  getUserByEmail(email, async (result, error) => {
-    if (error) return next(error);
+  model(GET_PW_BY_EMAIL, email)
+    .then(async (result) => {
+      if (result.length < 1)
+        return next(ApiError.badRequest("Incorrect email or password"));
+      const match = await bcrypt.compare(password, result[0].password);
 
-    if (!result.length) return callback(false);
-    const match = await bcrypt.compare(password, result[0].password);
-
-    if (!match) return next("Incorrect username or password");
-
-    next();
-  });
+      if (!match) return next("Incorrect email or password");
+      next();
+    })
+    .catch((err) => next(err));
 }
 
 module.exports = {
-  usernameNotTaken,
-  emailNotTaken,
+  credetialsNotTaken,
   loginVerify
 };

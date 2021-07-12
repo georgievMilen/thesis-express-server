@@ -3,11 +3,12 @@
 const socketIO = require("./utils/webSocket");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const pool = require("../configs/db");
+const { pool } = require("../configs/db");
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const session = require("cookie-session");
+const apiErrorHandler = require("./error/apiErrorHandler");
 
 module.exports = function () {
   let app = express(),
@@ -34,7 +35,7 @@ module.exports = function () {
       })
     );
     app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(express.static("uploads"));
+    app.use(express.static("resources/static/uploads/"));
     app.use(function (req, res, next) {
       res.header("Content-Type", "application/json;charset=UTF-8");
       res.header("Access-Control-Allow-Credentials", true);
@@ -49,10 +50,7 @@ module.exports = function () {
       cors({ origin: "http://localhost:3000", optionsSuccessStatus: 200 })
     );
     routes.init(app);
-    app.use((err, req, res, next) => {
-      console.log(err);
-      res.status(400).send(err);
-    });
+    app.use(apiErrorHandler);
   };
 
   start = function () {

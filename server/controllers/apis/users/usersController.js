@@ -1,24 +1,15 @@
 "use strict";
 
-const {
-  GET_USER,
-  INSERT_USER,
-  UDPATE_USER,
-  GET_DETAILS,
-  INSERT_DETAILS,
-  UPDATE_USER_DETAILS,
-  GET_INTEREST_IN_RELATION,
-  UPDATE_RELATIONSHIPS
-} = require("../../../constants/constants");
-const {
-  refreshTokenGenerate,
-  accessTokenGenerate
-} = require("../../../utils/jwtUtil");
+const { GET_USER_DATA } = require("../../../constants");
+const { INSERT_USER } = require("../../../constants");
+const { UDPATE_USER } = require("../../../constants");
+const { GET_GENDER_ID } = require("../../../constants");
+const { refreshTokenGenerate } = require("../../../utils/jwtUtil");
+const { accessTokenGenerate } = require("../../../utils/jwtUtil");
+const { emailFromUrl } = require("../../../utils/emaiFromUrl");
+const ApiError = require("../../../error/ApiError");
 const bcrypt = require("bcrypt");
-const {
-  userModal,
-  relationModal
-} = require("../../../models/users/usersModel");
+const { model } = require("../../../models/model");
 
 function logoutUserAction(req, res) {
   req.session.loggedin = false;
@@ -26,27 +17,21 @@ function logoutUserAction(req, res) {
 }
 
 async function createUserAction(req, res, next) {
-  const { password, firstName, lastName, email } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const refreshToken = refreshTokenGenerate(email);
+  const { password, email } = req.body;
 
-  const details = {
-    user_account_id: email
-  };
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const refresh_token = refreshTokenGenerate(email);
 
   const userData = {
-    first_name: firstName,
-    last_name: lastName,
-    email: email,
+    ...req.body,
     password: hashedPassword,
-    refresh_token: refreshToken
+    refresh_token
   };
 
-  Promise.all([
-    userModal(INSERT_DETAILS, details),
-    userModal(INSERT_USER, userData)
-  ])
+  model(INSERT_USER, userData)
     .then((result) => {
+      if (result.length < 1)
+        return next(ApiError.badRequest("A problem with the DB occured."));
       res.status(200).json("Successfull registration");
     })
     .catch((error) => {
@@ -55,26 +40,17 @@ async function createUserAction(req, res, next) {
 }
 
 function getProfileInfo(req, res, next) {
-  const url = req.url.split("=");
-  const email = url[1];
+  const email = emailFromUrl(req.url);
 
-  Promise.all([
-    userModal(GET_USER, email),
-    userModal(GET_DETAILS, email),
-    relationModal(GET_INTEREST_IN_RELATION, email)
-  ])
+  model(GET_USER_DATA, email)
     .then((result) => {
-      const profileInfo = result[0][0];
-      const profileDetails = result[1][0];
-      const profileRelationship = result[2];
+      if (result.length < 1)
+        return next(ApiError.badRequest("A problem with the DB occured."));
+      const profileInfo = result[0];
 
-      res
-        .status(200)
-        .send({ profileInfo, profileDetails, profileRelationship });
+      res.status(200).send(profileInfo);
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => next(error));
 }
 
 function loginUserAction(req, res) {
@@ -84,48 +60,62 @@ function loginUserAction(req, res) {
   res.status(200).json("Successfull login");
 }
 
-function updateProfile(req, res, next) {
-  // Send req.body to a function that will save to DB.
+async function updateProfile(req, res, next) {
+  const { file } = req;
+
+  let image = "";
+  const body = Object.assign({}, req.body);
   const {
     firstName,
     lastName,
+
     email,
+    username,
     age,
+    gender,
     weight,
     height,
     eyeColor,
     hairColor,
-    relArrForDB
-  } = req.body;
+    imageName,
+    about
+  } = body;
 
-  console.log(req.body);
-  const userAccountData = [firstName, lastName, email];
-  const userDetailsData = [age, height, weight, hairColor, eyeColor, email];
+  image = imageName;
+  if (file) image = file.filename;
 
-  const relationshipPromises = [];
-  relArrForDB.forEach((relation) => {
-    const promise = relationModal(UPDATE_RELATIONSHIPS, [
-      relation.checked,
-      email,
-      relation.name
-    ]);
-    relationshipPromises.push(promise);
-  });
+  const genderID = await model(GET_GENDER_ID, gender);
+  if (genderID.length < 1) {
+    console.error("Problem with genders!");
+    return next(ApiError.badRequest("A problem with the DB occured."));
+  }
+  const [{ id: gender_id }] = genderID;
 
-  Promise.all([
-    userModal(UDPATE_USER, userAccountData),
-    userModal(UPDATE_USER_DETAILS, userDetailsData),
-    relationshipPromises
-  ])
+  const userAccountData = [
+    firstName,
+    lastName,
+    email,
+    username,
+    age,
+    gender_id,
+    weight,
+    height,
+    eyeColor,
+    hairColor,
+    image,
+    about,
+    email
+  ];
 
+  model(UDPATE_USER, userAccountData)
     .then((result) => {
-      console.log("Success");
-
+      if (result.affectedRows < 1) {
+        console.error("Problem while updatind user!");
+        return next(ApiError.badRequest("A problem with the DB occured."));
+      }
       res.status(200).json("User successfully updated.");
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => next(error));
 }
 
 module.exports = {
@@ -133,5 +123,6 @@ module.exports = {
   loginUserAction,
   logoutUserAction,
   updateProfile,
+
   getProfileInfo
 };
