@@ -6,4 +6,3 @@ const localConfig = {
 };
 
 module.exports = localConfig;
-// To delete

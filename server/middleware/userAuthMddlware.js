@@ -7,13 +7,15 @@ const ApiError = require("../error/ApiError");
 async function credetialsNotTaken(req, res, next) {
   const { email, username } = req.body;
 
-  const result = [];
+  const emailTaken = await model(GET_EMAIL, email);
+  const usernameTaken = await model(GET_USERNAME, username);
 
-  result.push(await credentialIsTaken(GET_EMAIL, email));
-  result.push(await credentialIsTaken(GET_USERNAME, username));
-  result.forEach((element) => {
-    if (element) return next(element);
-  });
+  if (emailTaken.length > 0)
+    return next(ApiError.badRequest("Email already taken"));
+
+  if (usernameTaken.length > 0)
+    return next(ApiError.badRequest("Username already taken"));
+
   next();
 }
 
